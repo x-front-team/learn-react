@@ -5,10 +5,18 @@ import React, { Component } from 'react';
 
 class App extends Component {
 
+  constructor(props) {
+    super(props);
+  }
+
+  getHelloWorld() {
+    return 'hello world';
+  }
+
   render() {
     return (
 
-      <h1>This is a React Component</h1>
+      <h1>Our first react component, <a href="#" onClick={() => alert(this.getHelloWorld())}>click me</a></h1>
 
     );
   }
