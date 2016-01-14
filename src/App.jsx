@@ -2,23 +2,21 @@ import React, { Component } from 'react';
 //import fetch from 'whatwg-fetch';
 
 /**
- * props:
- * 上层组件传递下来的数据，
- * 不可修改
+ * form:
+ * form处理是react的弱项，相比angular，react的form处理就象jquery和原生js的差别一样
+ * 而且react的controlled form又会带来一些新的问题，
+ * 当然redux-form也给出了一个比较靠谱的方案，解决了react处理form的很多问题
  *
- * 大部分情况下，我们不会把所有功能放在一个组件里面，这个时候就需要拆分组件
- * 父子组件使用props进行数据传递，组件无法修改props，只能通过上级进行修改
+ * 问题1：不用controlled from，那么只能给form赋一个defaultValue初始值，而且必须是在input render完成前,
+ * 那么我们就没办法把异步取来的数据赋值给form
  *
- * 如果在使用input组件的时候指定了value得值，那么input就是controlled form
- * 这个时候再执行输入的时候如果没有改变赋值到value得变量，那么input将不会变化
- * 出现异常就是另外的情况了-。-
+ * 问题2：使用controlled form，那么每次的数据变化就需要通过setState来完成，而setState是异步的，这个时候如果
+ * 我们有一个select，希望在select改变的时候提交form，我们就需要在setState中加callback的方式来处理，如果form表单够大，
+ * 而且这样的需求较多，那么我们就很难进行封装
  *
- * props虽然不能直接修改，但是props里面的对象是可以修改的，例如this.props.obj.name = 'xxx';
- * 所以如果直接进行修改就会破坏元数据，这也是fb一直希望将props做成immutable的原因
- *
- * 很多时候我们希望在本组件内进行修改数据，数据改完了提交到服务器保存成功之后再覆盖元数据，
- * 那么这时候我们需要在组件内深拷贝一份数据进行修改，
- * 同时如果有新的props进来的时候我们要进行对比前两次的props是否相同，如果不同考虑是否要覆盖已经修改的数据
+ * 问题3：validation，本身react是没有表单验证支持的，所以要自己封装，有两种思考
+ * 一是封装表单组件，通过props配置进行验证，存在局限性，比如联动验证比较难实现
+ * 二是基于state进行验证，也就是redux-form的做法，redux-form管理了form得值，所以是对整个state进行校验
  *
  */
 
@@ -28,22 +26,15 @@ class Child extends Component{
     super(props);
   }
 
-  changeName(e) {
-    this.props.obj.name = e.target.value;
-    this.props.onNameChange(e.target.value);
+  editField(e, field) {
+    this.props.onEdit(field, e.target.value);
   }
-
-  //changeName(e) {
-  //  this.props.obj.name = e.target.value;
-  //  this.props.name = e.target.value
-  //}
 
   render() {
     return (
       <div>
-        <h3>This is Child component</h3>
-        <p>name is:<span style={{color: 'red'}}>{this.props.name}</span></p>
-        <p>input name: <input type="text" value={this.props.name} onChange={(e) => this.changeName(e)} /></p>
+        <p>name: <input type="text" value={this.props.name} name="name" onChange={(e) => this.editField(e, 'name')} /></p>
+        <p>pass: <input type="password" value={this.props.password} name="password" onChange={(e) => this.editField(e, 'password')} /></p>
       </div>
     );
   }
@@ -55,10 +46,13 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: 'state',
-      server: 'no',
-      obj: {name: 'state'}
+      formData: {
+        name: 'name',
+        password: 'password'
+      }
     };
+
+    this.editValue.bind(this);
   }
 
   fetchData() {
@@ -73,18 +67,19 @@ class App extends Component {
       })
   }
 
+  editValue(field, value) {
+    console.log(field + ':' + value);
+    this.setState({
+      [field]: value
+    });
+  }
+
   render() {
     return (
 
       <div>
-        <h1>Props</h1>
-        <p>data from server: <span style={{color: 'blue'}}>{this.state.server}</span></p>
-        <button onClick={() => this.fetchData()}>click to get the data</button>
-        <Child name={this.state.name} onNameChange={value => {
-            this.setState({name: value});
-            console.log(this.state.obj);
-          }
-        } obj={this.state.obj}></Child>
+        <h1>Forms</h1>
+        <Child formData={this.state.formData} onEdit={(field, value) => this.editValue(field, value)}></Child>
       </div>
 
     );
