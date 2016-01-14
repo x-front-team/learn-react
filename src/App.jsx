@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 //import fetch from 'whatwg-fetch';
 import Dom from './views/dom.jsx';
+import Mixin from './views/mixin.jsx';
 
 /**
  * 操作dom:
@@ -66,7 +67,7 @@ class App extends Component {
     return (
 
       <div>
-        <Dom></Dom>
+        <Mixin></Mixin>
       </div>
 
     );
