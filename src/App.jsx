@@ -20,6 +20,7 @@ import React, { Component } from 'react';
  * 那么这时候我们需要在组件内深拷贝一份数据进行修改，
  * 同时如果有新的props进来的时候我们要进行对比前两次的props是否相同，如果不同考虑是否要覆盖已经修改的数据
  *
+ *
  */
 
 class Child extends Component{
