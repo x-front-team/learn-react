@@ -15,6 +15,7 @@ class App extends Component {
       name: 'state',
       server: 'no'
     };
+    this.name = 'xxx';
   }
 
   fetchData() {
