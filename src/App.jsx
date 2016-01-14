@@ -27,17 +27,20 @@ class Child extends Component{
 
   constructor(props) {
     super(props);
-  }
 
-  changeName(e) {
-    this.props.obj.name = e.target.value;
-    this.props.onNameChange(e.target.value);
+    this.state = {};
+
   }
 
   //changeName(e) {
   //  this.props.obj.name = e.target.value;
-  //  this.props.name = e.target.value
+  //  this.props.onNameChange(e.target.value);
   //}
+
+  changeName(e) {
+    //this.props.obj.name = e.target.value;
+    this.props.name = e.target.value
+  }
 
   render() {
     return (
@@ -75,8 +78,8 @@ class App extends Component {
   }
 
   render() {
-    return (
 
+    return (
       <div>
         <h1>Props</h1>
         <p>data from server: <span style={{color: 'blue'}}>{this.state.server}</span></p>
@@ -87,8 +90,8 @@ class App extends Component {
           }
         } obj={this.state.obj}></Child>
       </div>
-
     );
+
   }
 
 }
